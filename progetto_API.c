@@ -39,7 +39,7 @@ long int dijkstra(int V, int** grafo, int nodo)
 		dist[nodo]=0;
  
     for (int count=0; count<V; count++) {
-         u=minimo(dist, visitato, V);
+        u=minimo(dist, visitato, V);
  
         visitato[u]=true;
  
@@ -59,6 +59,57 @@ long int dijkstra(int V, int** grafo, int nodo)
 	return sum;
    
 }
+
+void maxHeapify(pair * classifica, int i, int* hs){
+	int max;
+	pair temp;
+	//printf("HS=%d\n", *hs);
+	//printf("I=%d\n", i);
+	int l=2*i+1;
+	//printf("L=%d\n", l);
+	int r=2*i+2;
+	//printf("R=%d\n", r);
+	//printf("%d - %d - %d\n", classifica[l].number, classifica[i].number, classifica[r].number);
+	if(l<*hs && (classifica[l].number>classifica[i].number || 
+		(classifica[l].number==classifica[i].number && classifica[l].index>classifica[i].index)))
+		max=l;
+	else
+		max=i;
+	if(r<*hs && (classifica[r].number>classifica[max].number || 
+		(classifica[r].number==classifica[max].number && classifica[r].index>classifica[max].index)))
+		max=r;
+	if(max!=i){
+		//printf("PRE: %d - %d\n", classifica[i].number, classifica[max].number);
+		temp=classifica[i];
+		classifica[i]=classifica[max];
+		classifica[max]=temp;
+		/*printf("POST: %d - %d\n", classifica[i].number, classifica[max].number);
+		for(int l=0; l<10; l++)
+			printf("%d ", classifica[l].number);
+		printf("\n");*/
+		maxHeapify(classifica, max, hs);
+		}
+	}
+	
+/*void heapSort(pair * classifica, int k){
+	int i;
+	int hs=k;
+	pair temp;
+	
+	for(i=(k-1)/2-1; i>=0; i--)
+		maxHeapify(classifica, i, &hs);
+	for (i=k-1; i>0; i--){
+		printf("HS=%d\n", hs);
+		printf("I=%d\n", i);
+		printf("PRE: %d - %d\n", classifica[i].number, classifica[0].number);
+		temp=classifica[0];
+		classifica[0]=classifica[i];
+		classifica[i]=temp;
+		printf("POST: %d - %d\n", classifica[i].number, classifica[0].number);
+		hs--;
+		maxHeapify(classifica, i, &hs);
+		}
+	}*/
 
 void order(pair * classifica, int k) {
 	pair temp;
@@ -115,29 +166,27 @@ int main(){
 		
 	//printf("%c", var);
 	while (fgets(stringa, MAX, stdin)!=NULL){
-		printf("BRUH1\n");
-		printf("%s", stringa);
+		//printf("%s", stringa);
 	//while ((var=fgetc(stdin))!=EOF){
 		if(stringa[0]=='A'){
-		printf("BRUH\n");	
 		//pend=malloc((2*d+1)*sizeof(char));
 		//free(stringa);	
 		int **grafo = (int **)malloc(d * sizeof(int *));
 		//for (i=0; i<d; i++)	
-		printf("OK MAN\n");
+		c=getchar_unlocked();
 		for (i=0; i<d; i++){
-			printf("Qui ci arrivo\n");
 			grafo[i] = (int *)malloc(d * sizeof(int));
 			
 			//mat=malloc((20*d+1)*sizeof(char));
 			//if(fgets(mat, 20*d+1, stdin)){}
 			//printf("%s\n", mat);
-			c=getchar_unlocked();
-			printf("%c\n", c);
+			
+			//printf("%c\n", c);
 			//int l=0;
 			j=0;
-			while(c != 0 && c != 10){
+			for(j=0; j<d; j++){
 				
+				//c=getchar_unlocked();
 
 				tmp = 0; 
 				while(c != ',' && c != 0 && c != 10){
@@ -152,9 +201,9 @@ int main(){
 				
 				}*/
 				//printf("%d", grafo[i][j]);
-				c=getchar_unlocked();
-				printf("%c\n", c);
-				j++;
+				if(i!=d-1 || j!=d-1){
+					c=getchar_unlocked();
+				}
 			}
 				//printf("\n");
 			
@@ -180,23 +229,50 @@ int main(){
 			
 			
 			sum=dijkstra(d, grafo, 0);
-			free(grafo);
+			for (int i = 0; i < d; i++){
+				int* currentIntPtr = grafo[i];
+				free(currentIntPtr);
+			}
 			//printf("%d\n", sum);
 			if(index<k-1){
 				classifica[index].number=sum;
 				classifica[index].index=index;
 				//qsort(&classifica, sizeof(classifica) / sizeof(pair), sizeof(pair), (int (*) (const void *, const void *)) &comp);
-				//order(classifica, k);
+				//order(classifica, k);			
+				/*for(i=0; i<k; i++)
+					printf("%d ", classifica[i].number);
+				printf("\n");*/
 				}
 			else if(index==k-1){
 				classifica[index].number=sum;
 				classifica[index].index=index;
-				order(classifica, k);
+				for(i=(k-1)/2; i>=0; i--)
+					maxHeapify(classifica, i, &k);
+				//order(classifica, k);		
+				/*printf("PRIMA\n");
+				for(i=0; i<k; i++)
+					printf("%d ", classifica[i].number);
+				printf("\n");*/
+				//heapSort(classifica, k);
+				/*printf("DOPO\n");
+				for(i=0; i<k; i++)
+					printf("%d ", classifica[i].number);
+				printf("\n");*/
 				}
-			else if(classifica[k-1].number>sum){
-				classifica[k-1].number=sum;
-				classifica[k-1].index=index;
-				order(classifica, k);
+			else if(classifica[0].number>sum){
+				classifica[0].number=sum;
+				classifica[0].index=index;
+				//order(classifica, k);			
+				/*printf("PRIMA\n");
+				for(i=0; i<k; i++)
+					printf("%d ", classifica[i].number);
+				printf("\n");*/
+				//heapSort(classifica, k);
+				maxHeapify(classifica, 0, &k);
+				/*printf("DOPO\n");
+				for(i=0; i<k; i++)
+					printf("%d ", classifica[i].number);
+				printf("\n");*/
 				}
 			
 			index=index+1;
@@ -204,7 +280,6 @@ int main(){
 		}
 		
 		else if(stringa[0]=='T'){
-			printf("BRUHTOP\n");
 			if(classifica[0].index!=-1){
 				printf("%d", classifica[0].index);
 				for (int i=1; i<k; i++) {
@@ -225,7 +300,7 @@ int main(){
 
 				printf("\n%c\n", var);*/
 			
-	free(classifica);
+	//free(classifica);
 	return 0;	 
 	
 }
