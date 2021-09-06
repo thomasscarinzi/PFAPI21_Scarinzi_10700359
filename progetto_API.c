@@ -10,7 +10,7 @@ typedef struct{
 	int number;
 	int index;
 	} pair;
-	
+
 int minimo(int dist[], bool set[], int V)
 {
     int min = INT_MAX; 
@@ -25,7 +25,7 @@ int minimo(int dist[], bool set[], int V)
     return min_index;
 }
 
-long int dijkstra(int V, int** grafo, int nodo)
+long int dijkstra(int V, int grafo[V][V], int nodo)
 {
 	long int sum=0;		//var per la somma utilizzata per topk
     int dist[V]; 	// array di distanza minima da src a nodo i
@@ -60,6 +60,32 @@ long int dijkstra(int V, int** grafo, int nodo)
    
 }
 
+int getGrafo(int d){
+	int sum=0;
+	int i, j, tmp;
+	int grafo[d][d];
+	char c;
+	c=getchar_unlocked();
+	for (i=0; i<d; i++){
+		for(j=0; j<d; j++){
+			tmp = 0; 
+			while(c != ',' && c != 0 && c != 10){
+				
+				tmp = tmp*10+(c - '0');
+				grafo[i][j] = tmp;
+				
+				c=getchar_unlocked();
+			}
+			if(i!=d-1 || j!=d-1)
+				c=getchar_unlocked();
+			
+		}
+	}
+	sum=dijkstra(d, grafo, 0);
+	
+	return sum;
+	}
+
 void maxHeapify(pair * classifica, int i, int* hs){
 	int max;
 	pair temp;
@@ -90,52 +116,13 @@ void maxHeapify(pair * classifica, int i, int* hs){
 		maxHeapify(classifica, max, hs);
 		}
 	}
-	
-/*void heapSort(pair * classifica, int k){
-	int i;
-	int hs=k;
-	pair temp;
-	
-	for(i=(k-1)/2-1; i>=0; i--)
-		maxHeapify(classifica, i, &hs);
-	for (i=k-1; i>0; i--){
-		printf("HS=%d\n", hs);
-		printf("I=%d\n", i);
-		printf("PRE: %d - %d\n", classifica[i].number, classifica[0].number);
-		temp=classifica[0];
-		classifica[0]=classifica[i];
-		classifica[i]=temp;
-		printf("POST: %d - %d\n", classifica[i].number, classifica[0].number);
-		hs--;
-		maxHeapify(classifica, i, &hs);
-		}
-	}*/
-
-void order(pair * classifica, int k) {
-	pair temp;
-	int i, j;
-
-	for (i = 1; i < k; i++){
-		for (j = 0; j < k-i; j++) {
-			if (classifica[j].number>classifica[j + 1].number || 
-					(classifica[j].number==classifica[j + 1].number && classifica[j].index>classifica[j + 1].index)) {
-				temp = classifica[j];
-				classifica[j] = classifica[j + 1];
-				classifica[j + 1] = temp;
-			}
-		}
-	}
-}
 
 
 
 int main(){
-	char* stringa=malloc(sizeof(char)*MAX);
-//	char * mat;
-	char c;
+	char stringa[MAX];
 
-
-	int d, k, tmp;
+	int d, k;
 	long int sum=-1;
 	//stringa=NULL;
 	
@@ -145,16 +132,9 @@ int main(){
 	if(scanf("%d", &k)>0){}
 	
 	int i;
-	int j;
-	
-	/*if (scanf("%d", &d)==1 && scanf("%d", &k)==1)
-		printf("OK");*/
-	
-	/*int **grafo = (int **)malloc(d * sizeof(int *));
-    for (i=0; i<d; i++)
-         grafo[i] = (int *)malloc(d * sizeof(int));*/
+	//int j;
          
-    pair *classifica=malloc(sizeof(pair)*k);
+    pair classifica[k];
     for(int i=0; i<k; i++){
 		classifica[i].number=-1;
 		classifica[i].index=-1;
@@ -171,68 +151,7 @@ int main(){
 		if(stringa[0]=='A'){
 		//pend=malloc((2*d+1)*sizeof(char));
 		//free(stringa);	
-		int **grafo = (int **)malloc(d * sizeof(int *));
-		//for (i=0; i<d; i++)	
-		c=getchar_unlocked();
-		for (i=0; i<d; i++){
-			grafo[i] = (int *)malloc(d * sizeof(int));
-			
-			//mat=malloc((20*d+1)*sizeof(char));
-			//if(fgets(mat, 20*d+1, stdin)){}
-			//printf("%s\n", mat);
-			
-			//printf("%c\n", c);
-			//int l=0;
-			j=0;
-			for(j=0; j<d; j++){
-				
-				//c=getchar_unlocked();
-
-				tmp = 0; 
-				while(c != ',' && c != 0 && c != 10){
-					
-					tmp = tmp*10+(c - '0');
-					grafo[i][j] = tmp;
-					
-					c=getchar_unlocked();
-					//printf("%c", c);	
-				}
-		/*for (j=0; j<d; j++){
-				
-				}*/
-				//printf("%d", grafo[i][j]);
-				if(i!=d-1 || j!=d-1){
-					c=getchar_unlocked();
-				}
-			}
-				//printf("\n");
-			
-			//free(mat);
-		}
-			//if(scanf("%c", stringa)>0){}
-			/*for (i=0; i<d; i++){
-				//free(stringa);
-				grafo[i] = (long int *)malloc(d * sizeof(long int));				
-				if(fgets(stringa, 2*d+1, stdin)){}
-				grafo[i][0]=strtol(stringa, &pend, 10);
-				for(j=1; j<d; j++){
-					//grafo[i][j]=strtol(stringa, &pend, 10);
-					//stringa=pend;
-					grafo[i][j]=strtol(pend, &pend, 10);*/
-					//stringa=pend;
-					
-			
-			//free(pend);
-
-			//printf("%f\n", time_spent);
-			
-			
-			
-			sum=dijkstra(d, grafo, 0);
-			for (int i = 0; i < d; i++){
-				int* currentIntPtr = grafo[i];
-				free(currentIntPtr);
-			}
+		sum = getGrafo(d);
 			//printf("%d\n", sum);
 			if(index<k-1){
 				classifica[index].number=sum;
@@ -297,7 +216,6 @@ int main(){
 				//fscanf(fp, "%c", &var);
 				/*printf("\n%c\n", var);
 				fscanf(fp, "%c", &var);
-
 				printf("\n%c\n", var);*/
 			
 	//free(classifica);
